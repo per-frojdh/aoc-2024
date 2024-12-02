@@ -1,40 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"io"
-	"os"
 	"sort"
 	"strconv"
 	"strings"
+
+	"aoc/util"
 )
-
-func readInputIntoLines(filename string) (bool, []string) {
-	file, err := os.Open(filename)
-
-	if err != nil {
-		fmt.Println(err)
-		return false, []string{}
-	}
-
-	defer file.Close()
-	r := bufio.NewReader(file)
-
-	var lines []string
-
-	line, err := r.ReadString('\n')
-	for err == nil {
-		lines = append(lines, line)
-		line, err = r.ReadString('\n')
-	}
-
-	if err != io.EOF {
-		return false, []string{}
-	}
-
-	return true, lines
-}
 
 func getDistance(a, b int) int {
 	result := a - b
@@ -73,6 +46,18 @@ func sortNumbers(left, right []int) ([]int, []int) {
 	return left, right
 }
 
+func findOccurrences(numbers []int, target int) int {
+	occurrences := 0
+
+	for i := range numbers {
+		if numbers[i] == target {
+			occurrences += 1
+		}
+	}
+
+	return occurrences
+}
+
 func calculateDistance(lines []string) int {
 	distance := 0
 	left, right := splitNumbers(lines)
@@ -93,26 +78,13 @@ func getSimilarityScore(lines []string) int {
 		current := left[i]
 		occurences := findOccurrences(right, current)
 		similarityScore += current * occurences
-
 	}
 
 	return similarityScore
 }
 
-func findOccurrences(numbers []int, target int) int {
-	occurrences := 0
-
-	for i := range numbers {
-		if numbers[i] == target {
-			occurrences += 1
-		}
-	}
-
-	return occurrences
-}
-
 func main() {
-	success, lines := readInputIntoLines("input.txt")
+	success, lines := util.ReadInputIntoLines("input.txt")
 	if success {
 		distance := calculateDistance(lines)
 		fmt.Printf("Part1: Distance is %d \n", distance)

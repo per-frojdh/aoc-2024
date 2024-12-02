@@ -3,15 +3,17 @@ package main
 import (
 	"fmt"
 	"testing"
+
+	"aoc/util"
 )
 
 func createRedditinput() []string {
-	_, lines := readInputIntoLines("reddit_input.txt")
+	_, lines := util.ReadInputIntoLines("reddit_input.txt")
 	return lines
 }
 
 func createTestinput() []string {
-	_, lines := readInputIntoLines("test_input.txt")
+	_, lines := util.ReadInputIntoLines("test_input.txt")
 	return lines
 }
 
@@ -65,7 +67,6 @@ func TestLevelLogic(t *testing.T) {
 			levels := parseReport(current)
 			want := testExampleMap[i]
 
-			fmt.Println(levels)
 			got := GetSafety(levels)
 
 			if got != want {

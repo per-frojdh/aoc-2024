@@ -2,10 +2,12 @@ package main
 
 import (
 	"testing"
+
+	"aoc/util"
 )
 
 func createTestinput() []string {
-	_, lines := readInputIntoLines("test_input.txt")
+	_, lines := util.ReadInputIntoLines("test_input.txt")
 	return lines
 }
 

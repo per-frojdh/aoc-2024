@@ -1,3 +1,7 @@
-module frojd.dev/day2
+module aoc/day2
 
 go 1.23.3
+
+replace aoc/util => ../util
+
+require aoc/util v0.0.0-00010101000000-000000000000

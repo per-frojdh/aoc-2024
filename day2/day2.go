@@ -1,46 +1,40 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"io"
-	"os"
 	"slices"
 	"strconv"
 	"strings"
+
+	"aoc/util"
 )
-
-func readInputIntoLines(filename string) (bool, []string) {
-	file, err := os.Open(filename)
-
-	if err != nil {
-		fmt.Println(err)
-		return false, []string{}
-	}
-
-	defer file.Close()
-	r := bufio.NewReader(file)
-
-	var lines []string
-
-	line, err := r.ReadString('\n')
-	for err == nil {
-		lines = append(lines, line)
-		line, err = r.ReadString('\n')
-	}
-
-	if err != io.EOF {
-		return false, []string{}
-	}
-
-	return true, lines
-}
 
 const (
 	Increasing = 1
 	NotMoving  = 0
 	Decreasing = -1
 )
+
+func parseReport(report string) []int {
+	fields := strings.Fields(report)
+	levels := []int{}
+	for i := range len(fields) {
+		current, _ := strconv.Atoi(fields[i])
+		levels = append(levels, current)
+	}
+
+	return levels
+}
+
+func parseReports(report []string) [][]int {
+	reports := make([][]int, len(report))
+
+	for i := range len(report) {
+		reports[i] = parseReport(report[i])
+	}
+
+	return reports
+}
 
 func getDistance(a, b int) int {
 	result := a - b
@@ -99,29 +93,8 @@ func GetSafety(levels []int) bool {
 
 }
 
-func parseReport(report string) []int {
-	fields := strings.Fields(report)
-	levels := []int{}
-	for i := range len(fields) {
-		current, _ := strconv.Atoi(fields[i])
-		levels = append(levels, current)
-	}
-
-	return levels
-}
-
-func parseReports(report []string) [][]int {
-	reports := make([][]int, len(report))
-
-	for i := range len(report) {
-		reports[i] = parseReport(report[i])
-	}
-
-	return reports
-}
-
 func main() {
-	success, lines := readInputIntoLines("input.txt")
+	success, lines := util.ReadInputIntoLines("input.txt")
 	if success {
 		reports := parseReports(lines)
 		numberOfSafeReports_pt1 := 0
