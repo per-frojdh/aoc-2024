@@ -64,8 +64,8 @@ func GetSafetyWithProblemDampener(report []int) bool {
 	for i := range report {
 		// Brute-force check each value in the level by removing it
 		// and checking if it works this time, until it does (or doesnt)
-		portion := slices.Delete(slices.Clone(report), i, i+1)
-		if GetSafety(portion) {
+		reportsWithOneRemoved := slices.Delete(slices.Clone(report), i, i+1)
+		if GetSafety(reportsWithOneRemoved) {
 			return true
 		}
 	}
@@ -75,6 +75,9 @@ func GetSafetyWithProblemDampener(report []int) bool {
 func GetSafety(levels []int) bool {
 	// Get initial direction by looking at first two values
 	direction := getDirection(levels[0] - levels[1])
+
+	// Skip the last item, because it can't be faulty by itself
+	// and this will always check next neighbour
 	for i := range len(levels) - 1 {
 		// If we change direction, we are unsafe
 		changedDirection := getDirection(levels[i] - levels[i+1])
@@ -90,7 +93,6 @@ func GetSafety(levels []int) bool {
 	}
 
 	return true
-
 }
 
 func main() {
