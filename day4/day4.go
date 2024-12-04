@@ -7,35 +7,6 @@ import (
 	"aoc/util"
 )
 
-func convertLinesTo2d(lines []string) ([][]rune, error) {
-	result := [][]rune{}
-	for i := range lines {
-		result = append(result, []rune(lines[i]))
-	}
-
-	if len(result) == 0 {
-		return result, fmt.Errorf("No lines found")
-	}
-
-	return result, nil
-}
-
-func debugPointInGrid(grid [][]rune, startRow, startCol int) {
-	topLeft, _ := util.GridAt(grid, startRow-1, startCol-1)
-	top, _ := util.GridAt(grid, startRow-1, startCol)
-	topRight, _ := util.GridAt(grid, startRow-1, startCol+1)
-	right, _ := util.GridAt(grid, startRow, startCol+1)
-	center, _ := util.GridAt(grid, startRow, startCol)
-	bottomRight, _ := util.GridAt(grid, startRow+1, startCol+1)
-	bottom, _ := util.GridAt(grid, startRow+1, startCol)
-	bottomLeft, _ := util.GridAt(grid, startRow+1, startCol-1)
-	left, _ := util.GridAt(grid, startRow, startCol-1)
-
-	fmt.Printf("%q%q%q\n", topLeft, top, topRight)
-	fmt.Printf("%q%q%q\n", left, center, right)
-	fmt.Printf("%q%q%q\n", bottomLeft, bottom, bottomRight)
-}
-
 type word struct {
 	target    string
 	column    int
@@ -52,6 +23,19 @@ var directionMap = map[string][]int{
 	"BottomLeft":  {1, -1},
 	"Bototm":      {1, 0},
 	"BottomRight": {1, 1},
+}
+
+func convertLinesTo2d(lines []string) ([][]rune, error) {
+	result := [][]rune{}
+	for i := range lines {
+		result = append(result, []rune(lines[i]))
+	}
+
+	if len(result) == 0 {
+		return result, fmt.Errorf("No lines found")
+	}
+
+	return result, nil
 }
 
 func findWord(grid [][]rune, target string) []word {
@@ -82,26 +66,18 @@ func findWord(grid [][]rune, target string) []word {
 }
 
 func searchDirection(grid [][]rune, startRow, startCol int, dir []int, target []rune) bool {
-	targetLength := len(target)
-
-	// Direction is either 1, 0 or -1 in a direction, so times that by number of characters
-	// in the target string to get the possible end of it.
-	endRow := startRow + dir[0]*(targetLength-1)
-	endCol := startCol + dir[1]*(targetLength-1)
-
-	// Make sure the end row and col are within bounds of the grid
-	if endRow < 0 || endRow >= len(grid) || endCol < 0 || endCol >= len(grid[0]) {
-		return false
-	}
-
-	// We know it can fit inside the grid now, check each target
-	// rune one by one in the direction provided.
+	// We have found the first rune already
+	// so loop through the next sets of runes in the chosen direction.
+	// Directions are either 1 or -1 and provided in sets of two (x,y)
 	for i := range target {
 		currentRow := startRow + dir[0]*i
 		currentCol := startCol + dir[1]*i
 
-		// As soon as we don't find a match, stop searching.
-		if grid[currentRow][currentCol] != target[i] {
+		// Try to safely grab the value at the position
+		// and if we get an err, we're outside the bounds
+		// or wrong value, we return.
+		value, err := util.GridAt(grid, currentRow, currentCol)
+		if err != nil || value != target[i] {
 			return false
 		}
 	}

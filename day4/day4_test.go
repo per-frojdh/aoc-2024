@@ -17,6 +17,22 @@ func createPartTwoTestInput() []string {
 	return lines
 }
 
+func debugPointInGrid(grid [][]rune, startRow, startCol int) {
+	topLeft, _ := util.GridAt(grid, startRow-1, startCol-1)
+	top, _ := util.GridAt(grid, startRow-1, startCol)
+	topRight, _ := util.GridAt(grid, startRow-1, startCol+1)
+	right, _ := util.GridAt(grid, startRow, startCol+1)
+	center, _ := util.GridAt(grid, startRow, startCol)
+	bottomRight, _ := util.GridAt(grid, startRow+1, startCol+1)
+	bottom, _ := util.GridAt(grid, startRow+1, startCol)
+	bottomLeft, _ := util.GridAt(grid, startRow+1, startCol-1)
+	left, _ := util.GridAt(grid, startRow, startCol-1)
+
+	fmt.Printf("%q%q%q\n", topLeft, top, topRight)
+	fmt.Printf("%q%q%q\n", left, center, right)
+	fmt.Printf("%q%q%q\n", bottomLeft, bottom, bottomRight)
+}
+
 func debugWords(words []word) {
 	for i := range words {
 		word := words[i]
