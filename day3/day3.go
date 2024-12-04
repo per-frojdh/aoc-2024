@@ -83,6 +83,9 @@ func parseCorruptedInput(input string) (bool, [][]int) {
 		result = append(result, []int{n1, n2})
 	}
 
+	var n1, n2 int
+	fmt.Sscanf("mul(1,1)", "mul(%d,%d)", &n1, &n2)
+
 	return len(result) != 0, result
 }
 
