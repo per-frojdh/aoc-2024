@@ -32,7 +32,7 @@ func convertLinesTo2d(lines []string) ([][]rune, error) {
 	}
 
 	if len(result) == 0 {
-		return result, fmt.Errorf("No lines found")
+		return result, fmt.Errorf("no lines found")
 	}
 
 	return result, nil
@@ -65,13 +65,13 @@ func findWord(grid [][]rune, target string) []word {
 	return words
 }
 
-func searchDirection(grid [][]rune, startRow, startCol int, dir []int, target []rune) bool {
+func searchDirection(grid [][]rune, x, y int, dir []int, target []rune) bool {
 	// We have found the first rune already
 	// so loop through the next sets of runes in the chosen direction.
 	// Directions are either 1 or -1 and provided in sets of two (x,y)
 	for i := range target {
-		currentRow := startRow + dir[0]*i
-		currentCol := startCol + dir[1]*i
+		currentRow := x + dir[0]*i
+		currentCol := y + dir[1]*i
 
 		// Try to safely grab the value at the position
 		// and if we get an err, we're outside the bounds
@@ -88,11 +88,10 @@ func findXMas(grid [][]rune) int {
 	finds := 0
 	targetRune := 'A'
 
-	for row := range len(grid) {
-		for col := range len(grid[0]) {
-			if grid[row][col] == targetRune {
-				result := searchForX(grid, row, col)
-				if result {
+	for x := range grid {
+		for y := range grid[x] {
+			if grid[x][y] == targetRune {
+				if result := searchForX(grid, x, y); result {
 					finds++
 				}
 			}
@@ -101,21 +100,21 @@ func findXMas(grid [][]rune) int {
 	return finds
 }
 
-func searchForX(grid [][]rune, startRow, startCol int) bool {
+func searchForX(grid [][]rune, x, y int) bool {
 	// Check each of the corners of the start position
-	topLeft, topLeftErr := util.GridAt(grid, startRow-1, startCol-1)
+	topLeft, topLeftErr := util.GridAt(grid, x-1, y-1)
 	if topLeftErr != nil {
 		return false
 	}
-	topRight, topRightErr := util.GridAt(grid, startRow-1, startCol+1)
+	topRight, topRightErr := util.GridAt(grid, x-1, y+1)
 	if topRightErr != nil {
 		return false
 	}
-	bottomRight, bottomRightErr := util.GridAt(grid, startRow+1, startCol+1)
+	bottomRight, bottomRightErr := util.GridAt(grid, x+1, y+1)
 	if bottomRightErr != nil {
 		return false
 	}
-	bottomLeft, bottomLeftErr := util.GridAt(grid, startRow+1, startCol-1)
+	bottomLeft, bottomLeftErr := util.GridAt(grid, x+1, y-1)
 	if bottomLeftErr != nil {
 		return false
 	}

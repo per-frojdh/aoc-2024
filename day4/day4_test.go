@@ -88,7 +88,6 @@ func TestSearchForXMasIn2d(t *testing.T) {
 	t.Run("Can find an X-shaped MAS inside testing string", func(t *testing.T) {
 		lines := createPartTwoTestInput()
 		arr, _ := convertLinesTo2d(lines)
-		// debugRunes(arr)
 
 		expectedLength := 9
 		count := findXMas(arr)
