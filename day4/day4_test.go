@@ -12,6 +12,11 @@ func createTestinput() []string {
 	return lines
 }
 
+func createPartTwoTestInput() []string {
+	_, lines := util.ReadInputIntoLines("test_input_pt2.txt")
+	return lines
+}
+
 func debugWords(words []word) {
 	for i := range words {
 		word := words[i]
@@ -59,6 +64,21 @@ func TestSearchForMatchingStringsIn2d(t *testing.T) {
 
 		if len(words) != expectedLength {
 			t.Errorf("got %d, want %d", len(words), expectedLength)
+		}
+	})
+}
+
+func TestSearchForXMasIn2d(t *testing.T) {
+	t.Run("Can find an X-shaped MAS inside testing string", func(t *testing.T) {
+		lines := createPartTwoTestInput()
+		arr, _ := convertLinesTo2d(lines)
+		// debugRunes(arr)
+
+		expectedLength := 9
+		count := findXMas(arr)
+
+		if count != expectedLength {
+			t.Errorf("got %d, want %d", count, expectedLength)
 		}
 	})
 }

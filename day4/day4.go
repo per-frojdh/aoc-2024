@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 
 	"aoc/util"
 )
@@ -19,6 +20,22 @@ func convertLinesTo2d(lines []string) ([][]rune, error) {
 	return result, nil
 }
 
+func debugPointInGrid(grid [][]rune, startRow, startCol int) {
+	topLeft, _ := util.GridAt(grid, startRow-1, startCol-1)
+	top, _ := util.GridAt(grid, startRow-1, startCol)
+	topRight, _ := util.GridAt(grid, startRow-1, startCol+1)
+	right, _ := util.GridAt(grid, startRow, startCol+1)
+	center, _ := util.GridAt(grid, startRow, startCol)
+	bottomRight, _ := util.GridAt(grid, startRow+1, startCol+1)
+	bottom, _ := util.GridAt(grid, startRow+1, startCol)
+	bottomLeft, _ := util.GridAt(grid, startRow+1, startCol-1)
+	left, _ := util.GridAt(grid, startRow, startCol-1)
+
+	fmt.Printf("%q%q%q\n", topLeft, top, topRight)
+	fmt.Printf("%q%q%q\n", left, center, right)
+	fmt.Printf("%q%q%q\n", bottomLeft, bottom, bottomRight)
+}
+
 type word struct {
 	target    string
 	column    int
@@ -27,29 +44,29 @@ type word struct {
 }
 
 var directionMap = map[string][]int{
-	"UpLeft":    {-1, -1},
-	"Up":        {-1, 0},
-	"UpRight":   {-1, 1},
-	"Left":      {0, -1},
-	"Right":     {0, 1},
-	"DownLeft":  {1, -1},
-	"Down":      {1, 0},
-	"DownRight": {1, 1},
+	"UpLeft":      {-1, -1},
+	"Up":          {-1, 0},
+	"UpRight":     {-1, 1},
+	"Left":        {0, -1},
+	"Right":       {0, 1},
+	"BottomLeft":  {1, -1},
+	"Bototm":      {1, 0},
+	"BottomRight": {1, 1},
 }
 
 func findWord(grid [][]rune, target string) []word {
-	if len(grid) == 0 {
-		return nil
-	}
 	targetRunes := []rune(target)
 	words := make([]word, 0)
 
 	for row := range len(grid) {
 		for col := range len(grid[0]) {
-			// If we find the first letter, check all directions
+			// Always start by looking for the first letter in the target string
 			if grid[row][col] == targetRunes[0] {
+				// Now look around in each of the directions.
 				for directionName, dir := range directionMap {
-					if match := searchDirection(grid, row, col, dir, targetRunes); match != nil {
+					// For each direction, search in that direction, using the target runes
+					// if we find a match, add it to the words slice.
+					if match := searchDirection(grid, row, col, dir, targetRunes); match {
 						words = append(words, word{
 							target:    target,
 							row:       row,
@@ -64,61 +81,76 @@ func findWord(grid [][]rune, target string) []word {
 	return words
 }
 
-func findX(grid [][])
+func searchDirection(grid [][]rune, startRow, startCol int, dir []int, target []rune) bool {
+	targetLength := len(target)
 
-func searchForX(grid [][]rune, startRow, startCol int) [][2]int {
-	rows := len(grid)
-	cols := len(grid[0])
-	target := "MAS"
-	path := make([][2]int, len(target))
+	// Direction is either 1, 0 or -1 in a direction, so times that by number of characters
+	// in the target string to get the possible end of it.
+	endRow := startRow + dir[0]*(targetLength-1)
+	endCol := startCol + dir[1]*(targetLength-1)
 
-	// Check if the word would fit in this direction
-	endRow := startRow + len(target)-1
-	endCol := startCol + len(target)-1
-
-	if endRow < 0 || endRow >= rows || endCol < 0 || endCol >= cols {
-		return nil
-	}
-	
-	// M.S
-	// .A.
-	// M.S
-	// We have found a A
-	
-	// startRow -1, startCol -1 HAS to be M
-	// startRow +1  startCol -1 has to be M
-	// startRow -1 startCol +1 has to be S
-	// startRow +1 startCol +1 has to be S
-
-
-	return path
-}
-
-func searchDirection(grid [][]rune, startRow, startCol int, dir []int, target []rune) [][2]int {
-	rows := len(grid)
-	cols := len(grid[0])
-	path := make([][2]int, len(target))
-
-	// Check if the word would fit in this direction
-	endRow := startRow + dir[0]*(len(target)-1)
-	endCol := startCol + dir[1]*(len(target)-1)
-
-	if endRow < 0 || endRow >= rows || endCol < 0 || endCol >= cols {
-		return nil
+	// Make sure the end row and col are within bounds of the grid
+	if endRow < 0 || endRow >= len(grid) || endCol < 0 || endCol >= len(grid[0]) {
+		return false
 	}
 
-	// Check each character in the direction
-	for i := 0; i < len(target); i++ {
+	// We know it can fit inside the grid now, check each target
+	// rune one by one in the direction provided.
+	for i := range target {
 		currentRow := startRow + dir[0]*i
 		currentCol := startCol + dir[1]*i
 
+		// As soon as we don't find a match, stop searching.
 		if grid[currentRow][currentCol] != target[i] {
-			return nil
+			return false
 		}
-		path[i] = [2]int{currentRow, currentCol}
+	}
+	return true
+}
+
+func findXMas(grid [][]rune) int {
+	finds := 0
+	targetRune := 'A'
+
+	for row := range len(grid) {
+		for col := range len(grid[0]) {
+			if grid[row][col] == targetRune {
+				result := searchForX(grid, row, col)
+				if result {
+					finds++
+				}
+			}
+		}
+	}
+	return finds
+}
+
+func searchForX(grid [][]rune, startRow, startCol int) bool {
+	// Check each of the corners of the start position
+	topLeft, topLeftErr := util.GridAt(grid, startRow-1, startCol-1)
+	if topLeftErr != nil {
+		return false
+	}
+	topRight, topRightErr := util.GridAt(grid, startRow-1, startCol+1)
+	if topRightErr != nil {
+		return false
+	}
+	bottomRight, bottomRightErr := util.GridAt(grid, startRow+1, startCol+1)
+	if bottomRightErr != nil {
+		return false
+	}
+	bottomLeft, bottomLeftErr := util.GridAt(grid, startRow+1, startCol-1)
+	if bottomLeftErr != nil {
+		return false
 	}
 
-	return path
+	// Check if the assembled string in both diagonal directions
+	// match either of the valid values
+	topLeft_bottomRight := fmt.Sprintf("%c%c%c", topLeft, 'A', bottomRight)
+	topRight_bottomLeft := fmt.Sprintf("%c%c%c", topRight, 'A', bottomLeft)
+	valid := []string{"MAS", "SAM"}
+
+	return slices.Contains(valid, topLeft_bottomRight) && slices.Contains(valid, topRight_bottomLeft)
 }
 
 func main() {
@@ -128,6 +160,9 @@ func main() {
 		arr, _ := convertLinesTo2d(lines)
 		words := findWord(arr, target)
 
-		fmt.Printf("Part1: Found %d number of words in grid", len(words))
+		fmt.Printf("Part1: Found %d number of words in grid\n", len(words))
+
+		count := findXMas(arr)
+		fmt.Printf("Part2: Found %d number of X-shaped MAS in grid", count)
 	}
 }
