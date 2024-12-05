@@ -118,6 +118,8 @@ func checkUpdatesAgainstRulesAndAttemptSort(rules []Rule, updates [][]int) map[i
 
 }
 
+// Probably won't need this if I made the rules into a map
+// but too many other changes to get that to work
 func hasRuleForXY(x, y int, rules []Rule) bool {
 	for _, rule := range rules {
 		if rule.x == x && rule.y == y {
