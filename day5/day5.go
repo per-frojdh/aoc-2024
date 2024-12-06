@@ -90,6 +90,7 @@ func checkCorrectness(lines []int, rules []Rule) bool {
 }
 
 func checkUpdatesAgainstRules(rules []Rule, updates [][]int) map[int]int {
+	defer util.Duration(util.Track("withoutSorting"))
 	updateResult := map[int]int{}
 	for i, update := range updates {
 		// For each update, check the correctness according to all rules
@@ -104,6 +105,7 @@ func checkUpdatesAgainstRules(rules []Rule, updates [][]int) map[int]int {
 }
 
 func checkUpdatesAgainstRulesAndAttemptSort(rules []Rule, updates [][]int) map[int]int {
+	defer util.Duration(util.Track("fixSorting"))
 	updateResult := map[int]int{}
 	for i, update := range updates {
 		// For each update, check the correctness according to all rules
@@ -156,6 +158,7 @@ func fixSorting(line []int, rules []Rule) []int {
 }
 
 func main() {
+	defer util.Duration(util.Track("main"))
 	success, lines := util.ReadInputIntoLines("input.txt")
 	if success {
 		rules, updates := separateRulesAndUpdates(lines)
@@ -172,7 +175,7 @@ func main() {
 			total += count
 		}
 
-		fmt.Printf("Part2: Sum of all middles are after sorting %d", total)
+		fmt.Printf("Part2: Sum of all middles are after sorting %d\n", total)
 
 	}
 }
